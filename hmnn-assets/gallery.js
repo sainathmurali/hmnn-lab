@@ -1,7 +1,21 @@
-async function getData(url, galleryTag) {
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+async function getData(galleryTag) {
     try {
-        const response = await fetch(url);
-        const data = await response.json();
+        const response = await firebase.database().ref('/galleryData').once('value');
+        const data = response.val();
         console.log(data);
 
         // Sort the gallery items based on month and year
@@ -25,6 +39,7 @@ async function getData(url, galleryTag) {
         console.error("Error fetching gallery data:", error);
     }
 }
+
 function createGalleryItem(item, galleryTag) {
     const isOpen = item.ImageTag === galleryTag;
     const galleryItem = `
@@ -69,11 +84,7 @@ $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
     const galleryTag = urlParams.get('tag');
 
-    if (galleryTag) {
-        getData("https://script.google.com/macros/s/AKfycbyzcWqnZavhOn9h1msPALzc_A27rfoss9gkHxMMXzbtESg_howtD6mP3Ya2dkWbyPa3/exec", galleryTag);
-    } else {
-        getData("https://script.google.com/macros/s/AKfycbyzcWqnZavhOn9h1msPALzc_A27rfoss9gkHxMMXzbtESg_howtD6mP3Ya2dkWbyPa3/exec");
-    }
+    getData(galleryTag);
 });
 
 // Open the specific gallery image if the data-open attribute is true
